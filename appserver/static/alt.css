@@ -1,0 +1,42 @@
+/*khutchinson:whatever id you want to have a scrollable div: prepend it after the # and before the .splunk-view....etc Sometimes you may want more results available but you don't want it to take up the whole page*/
+/* this css allows elements in the named `id` */
+div[id^=element1] .results-table {
+    overflow: auto;
+    position: relative;
+    height: 225px;
+}
+div[id^=tblToolTip] .results-table {
+    overflow: auto;
+    position: relative;
+    height: 300px;
+}
+
+/* this css gets the form to fit on one line*/
+.fieldset .input-checkboxgroup {
+    width: 75px !important;
+    margin-right:10px;
+}
+.fieldset .input-text {
+	min-width:125px !important;
+	width:150px !important;
+	margin-right:10px !important;
+}
+div[id^=input] input, textarea, .input .text-input .uneditable-input {
+    width: 125px !important;
+    margin-right:10px !important;
+}
+div[id^=input] .select2-container {
+	min-width:100px !important;
+	/*margin-right:10px !important;*/
+}
+/* This limits the width of the column and keeps the text from wrapping. There is a tooltip.js that is attached in coordination with this declaration to show the contents of the referenced column*/
+.results-table .wrapped-results th, .results-table .wrapped-results td {
+    white-space: nowrap !important;
+    max-width: 150px !important;
+    min-width: 25px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+.fieldset .input {
+    width: inherit !important;
+}

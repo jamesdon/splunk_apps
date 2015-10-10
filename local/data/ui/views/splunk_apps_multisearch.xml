@@ -1,0 +1,394 @@
+<form script="tooltip.js, single_trend.js" stylesheet="single_trend.css, tooltip.css, alt.css">
+  <search id="globalSearch">
+    <query>index=apps 
+      | head 2100 
+      | dedup id 
+      | rename name AS Name, author_display AS Author, type AS Type, downloads AS Downloads, categories{} AS Categories, app_contents{} AS "App Contents", status AS Status
+      | sort - Downloads, Name, Author, Type, Categories, platform, "App Contents", Status
+    </query>
+    <earliest>0</earliest>
+    <latest>now</latest>
+  </search>
+  <search id="formSearch">
+    <query>index=apps author_display=$author_display$ pitch=$pitch$ $platform$ $type$ $category$ $status$ 
+      | head 2100 
+      | where downloads &gt; $downloads$ 
+      | dedup id 
+      | fillnull value="not_specified" app_contents{} 
+      | search $app_contents$ 
+      | rename name AS "App Name", author_display AS Author, pitch AS Pitch, platform AS Platform, type AS Type, downloads AS Downloads, status AS Status, updated AS "Last Update", released AS Released, versions{} AS Versions, deployment_types{} AS "Deployment Types", categories{} AS Category, app_contents{} AS "App Content" 
+      | sort  "App Name", Author, Pitch, Platform, Type, "App Content", Category, Downloads, Status, Released, "Last Update", Versions, "Deployment Types"
+    </query>
+    <earliest>0</earliest>
+    <latest>now</latest>
+  </search>
+  <label>Splunk Apps</label>
+  <row>
+    <panel>
+      <table>
+        <title>Top 100 Downloaded Apps</title>
+        <search base="globalSearch">
+          <query>head 50 | eval Downloads=tostring(Downloads, "commas") | table Name, Author, Type, Downloads</query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">100</option>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Categories</title>
+        <search base="globalSearch">
+          <query>top limit=20 Categories</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Platforms</title>
+        <search base="globalSearch">
+          <query>top limit=20 platform</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Type</title>
+        <search base="globalSearch">
+          <query>top limit=20 Type</query>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.axisTitleY.visibility">collapsed</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">column</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">stacked</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.chart.showDataLabels">all</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>App Contents</title>
+        <search base="globalSearch">
+          <query>fillnull value="not_specified" "App Contents" | top limit=20 "App Contents"</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="mapping.choroplethLayer.colorBins">5</option>
+        <option name="mapping.choroplethLayer.colorMode">auto</option>
+        <option name="mapping.choroplethLayer.maximumColor">0xDB5800</option>
+        <option name="mapping.choroplethLayer.minimumColor">0x2F25BA</option>
+        <option name="mapping.choroplethLayer.neutralPoint">0</option>
+        <option name="mapping.choroplethLayer.shapeOpacity">0.75</option>
+        <option name="mapping.choroplethLayer.showBorder">1</option>
+        <option name="mapping.data.maxClusters">100</option>
+        <option name="mapping.map.center">(0,0)</option>
+        <option name="mapping.map.panning">1</option>
+        <option name="mapping.map.scrollZoom">0</option>
+        <option name="mapping.map.zoom">2</option>
+        <option name="mapping.markerLayer.markerMaxSize">50</option>
+        <option name="mapping.markerLayer.markerMinSize">10</option>
+        <option name="mapping.markerLayer.markerOpacity">0.8</option>
+        <option name="mapping.showTiles">1</option>
+        <option name="mapping.tileLayer.maxZoom">7</option>
+        <option name="mapping.tileLayer.minZoom">0</option>
+        <option name="mapping.tileLayer.tileOpacity">1</option>
+        <option name="mapping.type">choropleth</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>App Status</title>
+        <search base="globalSearch">
+          <query>fillnull value="not_specified" "Status" | top limit=20 "Status"</query>
+        </search>
+        <option name="charting.chart">pie</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">0</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.showDataLabels">none</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.layout.splitSeries.allowIndependentYRanges">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+        <option name="mapping.choroplethLayer.colorBins">5</option>
+        <option name="mapping.choroplethLayer.colorMode">auto</option>
+        <option name="mapping.choroplethLayer.maximumColor">0xDB5800</option>
+        <option name="mapping.choroplethLayer.minimumColor">0x2F25BA</option>
+        <option name="mapping.choroplethLayer.neutralPoint">0</option>
+        <option name="mapping.choroplethLayer.shapeOpacity">0.75</option>
+        <option name="mapping.choroplethLayer.showBorder">1</option>
+        <option name="mapping.data.maxClusters">100</option>
+        <option name="mapping.map.center">(0,0)</option>
+        <option name="mapping.map.panning">1</option>
+        <option name="mapping.map.scrollZoom">0</option>
+        <option name="mapping.map.zoom">2</option>
+        <option name="mapping.markerLayer.markerMaxSize">50</option>
+        <option name="mapping.markerLayer.markerMinSize">10</option>
+        <option name="mapping.markerLayer.markerOpacity">0.8</option>
+        <option name="mapping.showTiles">1</option>
+        <option name="mapping.tileLayer.maxZoom">7</option>
+        <option name="mapping.tileLayer.minZoom">0</option>
+        <option name="mapping.tileLayer.tileOpacity">1</option>
+        <option name="mapping.type">choropleth</option>
+      </chart>
+    </panel>
+    <panel>
+      <single>
+        <title>New Apps Compared to Last Week</title>
+        <search>
+          <query>index=apps isNew=true | head 2100 | bucket 1d | dedup id | timechart count span=1d</query>
+        </search>
+        <earliest>0</earliest>
+        <latest>now</latest>
+        <option name="field">count</option>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="rangeColors">["0x65a637","0x6db7c6","0xf7bc38","0xf58f39","0xd93f3c"]</option>
+        <option name="rangeValues">[0,30,70,100]</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="trendInterval">-7d</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="linkView">search</option>
+        <option name="list.drilldown">full</option>
+        <option name="list.wrap">1</option>
+        <option name="maxLines">5</option>
+        <option name="raw.drilldown">full</option>
+        <option name="rowNumbers">0</option>
+        <option name="table.drilldown">all</option>
+        <option name="table.wrap">1</option>
+        <option name="type">list</option>
+        <fields>["host","source","sourcetype"]</fields>
+        <option name="drilldown">none</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Total Number of Results Below</title>
+        <search base="formSearch">
+          <query>stats count(id)</query>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+        <option name="colorBy">value</option>
+        <option name="colorMode">block</option>
+        <option name="numberPrecision">0</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="useColors">1</option>
+        <option name="useThousandSeparators">1</option>
+        <option name="rangeColors">["0x65a637","0x65a637"]</option>
+        <option name="rangeValues">[0]</option>
+        <option name="trendInterval">auto</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Guided App Search</title>
+      <input type="text" token="author_display" searchWhenChanged="true">
+        <label>Author</label>
+        <default>*</default>
+        <seed>*</seed>
+        <prefix>"*</prefix>
+        <suffix>*"</suffix>
+      </input>
+      <input type="text" token="pitch" searchWhenChanged="true">
+        <label>Pitch</label>
+        <default>*</default>
+        <seed>*</seed>
+        <prefix>"*</prefix>
+        <suffix>*"</suffix>
+      </input>
+      <input type="multiselect" token="platform" searchWhenChanged="true">
+        <label>Platform</label>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="platform" fieldForValue="platform">
+          index=apps | head 2100 | where downloads &gt; $downloads$ | dedup id | stats count by platform | sort - count | table platform
+        </populatingSearch>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <valuePrefix>platform="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+        <choice value="*">All</choice>
+        <default>*</default>
+      </input>
+      <input type="checkbox" token="type" searchWhenChanged="true">
+        <label>Type</label>
+        <choice value="app">app</choice>
+        <choice value="addon">addon</choice>
+        <default>app,addon</default>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <valuePrefix>type="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+      </input>
+      <input type="multiselect" token="app_contents" searchWhenChanged="true">
+        <label>App Contents</label>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="app_contents" fieldForValue="app_contents">
+          index=apps | head 2100 | dedup id | fillnull value="not_specified" app_contents{} | stats count by app_contents{} | sort - count | rename app_contents{} AS app_contents | table app_contents
+        </populatingSearch>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <valuePrefix>app_contents{}="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+        <choice value="*">All</choice>
+        <default>*</default>
+      </input>
+      <input type="multiselect" token="category" searchWhenChanged="true">
+        <label>Category</label>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="category" fieldForValue="category">
+          index=apps | head 2100 | dedup id | stats count by categories{} | sort - count | rename categories{} AS category | table category
+        </populatingSearch>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <valuePrefix>categories{}="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+        <choice value="*">All</choice>
+        <default>*</default>
+      </input>
+      <input type="text" token="downloads" searchWhenChanged="true">
+        <label>Downloads greater than</label>
+        <default>0</default>
+        <seed>0</seed>
+      </input>
+      <input type="multiselect" token="status" searchWhenChanged="true">
+        <label>App Status</label>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="status" fieldForValue="status">
+          index=apps | head 2100 | dedup id | stats count by status | sort - count | table status
+        </populatingSearch>
+        <prefix>(</prefix>
+        <suffix>)</suffix>
+        <valuePrefix>status="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+        <choice value="*">All</choice>
+        <default>*</default>
+      </input>
+      <table id="tblToolTip">
+        <search base="formSearch">
+          <query>
+            eval Downloads=tostring(Downloads, "commas") 
+            | table "App Name", Author, Pitch, Platform, Type, "App Content", Category, Downloads, Status, "Last Update", Versions, "Deployment Types"
+          </query>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">50</option>
+      </table>
+    </panel>
+  </row>
+</form>

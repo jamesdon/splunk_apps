@@ -1,0 +1,32 @@
+[app/ui]
+version = 6.2.3
+modtime = 1432693829.508698000
+
+[app/launcher]
+version = 6.2.3
+modtime = 1432693829.513073000
+
+[views/splunk_apps]
+owner = admin
+version = 6.3.0
+modtime = 1442978213.584693000
+
+[nav/default]
+version = 6.3.0
+modtime = 1442975823.234463000
+
+[inputs/script%3A%2F%2F%24SPLUNK_HOME%2Fetc%2Fapps%2Fsplunk_apps%2Fbin%2FgetSplunkApps.py]
+owner = admin
+version = 6.3.0
+modtime = 1444132472.227164000
+
+[views/splunk_apps_multisearch]
+access = read : [ * ], write : [ admin ]
+export = none
+owner = admin
+version = 6.3.0
+modtime = 1444324160.923361000
+
+[app/install/install_source_checksum]
+version = 6.3.0
+modtime = 1443924301.409748000

@@ -1,0 +1,211 @@
+<form script="single_trend.js" stylesheet="single_trend.css">
+  <label>Splunk Apps (Without Multi-Search)</label>
+  <row>
+    <panel>
+      <table>
+        <title>Top 10 Downloaded Apps</title>
+        <search>
+          <query>index=apps | dedup id | sort - downloads | head 10 | rename name AS Name,  author_display AS Author, type AS Type, downloads AS Downloads| table Name, Author, Type, Downloads</query>
+          <earliest>0</earliest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+    <panel>
+      <chart>
+        <title>Categories</title>
+        <search>
+          <query>index=apps | dedup id | rename categories{} AS Categories | top limit=20 Categories</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">bar</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">none</option>
+      </chart>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <chart>
+        <title>Platforms</title>
+        <search>
+          <query>index=apps | dedup id | top limit=20 platform</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <chart>
+        <title>Type</title>
+        <search>
+          <query>index=apps | dedup id | top limit=20 type</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="charting.axisLabelsX.majorLabelStyle.overflowMode">ellipsisNone</option>
+        <option name="charting.axisLabelsX.majorLabelStyle.rotation">0</option>
+        <option name="charting.axisTitleX.visibility">visible</option>
+        <option name="charting.axisTitleY.visibility">visible</option>
+        <option name="charting.axisTitleY2.visibility">visible</option>
+        <option name="charting.axisX.scale">linear</option>
+        <option name="charting.axisY.scale">linear</option>
+        <option name="charting.axisY2.enabled">false</option>
+        <option name="charting.axisY2.scale">inherit</option>
+        <option name="charting.chart">pie</option>
+        <option name="charting.chart.bubbleMaximumSize">50</option>
+        <option name="charting.chart.bubbleMinimumSize">10</option>
+        <option name="charting.chart.bubbleSizeBy">area</option>
+        <option name="charting.chart.nullValueMode">gaps</option>
+        <option name="charting.chart.sliceCollapsingThreshold">0.01</option>
+        <option name="charting.chart.stackMode">default</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.layout.splitSeries">0</option>
+        <option name="charting.legend.labelStyle.overflowMode">ellipsisMiddle</option>
+        <option name="charting.legend.placement">right</option>
+      </chart>
+    </panel>
+    <panel>
+      <single>
+        <title>New Apps</title>
+        <searchString>index=apps isNew=true | timechart span=1d count(isNew) AS count</searchString>
+        <earliest>0</earliest>
+        <latest></latest>
+        <option name="field">count</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <single>
+        <title>Total Number of Results Below</title>
+        <search>
+          <query>index=apps author_display=$author_display$ pitch=$pitch$ $platform$ $type$ $category$ | dedup id | stats count(name)</query>
+          <earliest>0</earliest>
+        </search>
+        <option name="drilldown">none</option>
+        <option name="linkView">search</option>
+        <option name="colorBy">value</option>
+        <option name="colorMode">none</option>
+        <option name="numberPrecision">0</option>
+        <option name="showSparkline">1</option>
+        <option name="showTrendIndicator">1</option>
+        <option name="trendColorInterpretation">standard</option>
+        <option name="trendDisplayMode">absolute</option>
+        <option name="useColors">0</option>
+        <option name="useThousandSeparators">1</option>
+      </single>
+    </panel>
+  </row>
+  <row>
+    <panel>
+      <title>Guided App Search</title>
+      <input type="text" token="author_display" searchWhenChanged="true">
+        <label>Author</label>
+        <default>*</default>
+        <seed>*</seed>
+        <prefix>"*</prefix>
+        <suffix>*"</suffix>
+      </input>
+      <input type="text" token="pitch" searchWhenChanged="true">
+        <label>Pitch</label>
+        <default>*</default>
+        <seed>*</seed>
+        <prefix>"*</prefix>
+        <suffix>*"</suffix>
+      </input>
+      <input type="multiselect" token="platform" searchWhenChanged="true">
+        <label>Platform</label>
+        <choice value="OSX">OSX</choice>
+        <choice value="Linux">Linux</choice>
+        <choice value="Windows">Windows</choice>
+        <choice value="Solaris">Solaris</choice>
+        <choice value="Platform Independent">Platform Independent</choice>
+        <default>OSX,Windows,Solaris,Platform Independent,Linux</default>
+        <valuePrefix>platform="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+      </input>
+      <input type="checkbox" token="type" searchWhenChanged="true">
+        <label>Type</label>
+        <choice value="app">app</choice>
+        <choice value="addon">addon</choice>
+        <default>app,addon</default>
+        <valuePrefix>type="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+      </input>
+      <input type="multiselect" token="category" searchWhenChanged="true">
+        <label>Platform</label>
+        <choice value="it_operations_management">it_operations_management</choice>
+        <choice value="security_compliance">security_compliance</choice>
+        <choice value="utilities">utilities</choice>
+        <choice value="cool_stuff">cool_stuff</choice>
+        <choice value="application_management">application_management</choice>
+        <choice value="business_analytics">business_analytics</choice>
+        <choice value="internet_of_things">internet_of_things</choice>
+        <default>it_operations_management,security_compliance,utilities,cool_stuff,application_management,business_analytics,internet_of_things</default>
+        <valuePrefix>categories{}="</valuePrefix>
+        <valueSuffix>"</valueSuffix>
+        <delimiter> OR </delimiter>
+      </input>
+      <table>
+        <search>
+          <query>index=apps author_display=$author_display$ pitch=$pitch$ $platform$ $type$ $category$| dedup id | sort - downloads | rename name AS "App Name",  author_display AS Author, pitch AS Pitch, platform AS Platform, type AS Type, downloads AS Downloads, status AS Status, updated AS "Last Updated", released AS Released, versions{} AS Versions, deployment_types{} AS "Deployment Types", categories{} AS Category | table "App Name", Author, Pitch, Platform, Type, Downloads, Status, Released, "Last Updated", Versions, Category, "Deployment Types"</query>
+          <earliest>0</earliest>
+          <latest></latest>
+        </search>
+        <option name="wrap">true</option>
+        <option name="rowNumbers">false</option>
+        <option name="dataOverlayMode">none</option>
+        <option name="drilldown">cell</option>
+        <option name="count">10</option>
+      </table>
+    </panel>
+  </row>
+</form>
