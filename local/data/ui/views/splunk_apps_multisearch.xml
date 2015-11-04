@@ -4,8 +4,7 @@
       | head 2100 
       | dedup id 
       | rename name AS Name, author_display AS Author, type AS Type, downloads AS Downloads, categories{} AS Categories, app_contents{} AS "App Contents", status AS Status
-      | sort - Downloads, Name, Author, Type, Categories, platform, "App Contents", Status
-    </query>
+      | sort - Downloads, Name, Author, Type, Categories, platform, "App Contents", Status, released</query>
     <earliest>0</earliest>
     <latest>now</latest>
   </search>
@@ -17,12 +16,88 @@
       | fillnull value="not_specified" app_contents{} 
       | search $app_contents$ 
       | rename name AS "App Name", author_display AS Author, pitch AS Pitch, platform AS Platform, type AS Type, downloads AS Downloads, status AS Status, updated AS "Last Update", released AS Released, versions{} AS Versions, deployment_types{} AS "Deployment Types", categories{} AS Category, app_contents{} AS "App Content" 
-      | sort  "App Name", Author, Pitch, Platform, Type, "App Content", Category, Downloads, Status, Released, "Last Update", Versions, "Deployment Types"
-    </query>
+      | sort  "App Name", Author, Pitch, Platform, Type, "App Content", Category, Downloads, Status, Released, "Last Update", Versions, "Deployment Types"</query>
     <earliest>0</earliest>
     <latest>now</latest>
   </search>
-  <label>Splunk Apps</label>
+  <label>Splunk Apps Analysis</label>
+  
+  <row>
+    <panel>
+      <input type="link" token="needed">
+        <label></label>
+        <choice value="link1">Rate of New Applications</choice>
+        <choice value="link2">Total Count of New Applications</choice>
+        <choice value="link3">Total Count and Rate</choice>
+        <default>Rate of New Applications</default>
+        <change>
+          <condition value="link1">
+            <set token="showRate">true</set>
+            <unset token="showCount"></unset>
+            <unset token="showBoth"></unset>
+          </condition>
+          <condition value="link2">
+            <unset token="showRate"></unset>
+            <set token="showCount">true</set>
+            <unset token="showBoth"></unset>
+          </condition>
+          <condition value="link3">
+            <unset token="showRate"></unset>
+            <unset token="showCount"></unset>
+            <set token="showBoth">true</set>
+          </condition>
+        </change>
+      </input>     
+      <chart depends="$showRate$">
+        <title>Rate of New Applications</title>
+        <search base="globalSearch">
+          <query>
+            eval _time=strptime(released, "%b %d, %Y") 
+            | timechart count AS Rate
+          </query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.seriesColors">0x00FF00</option>
+      </chart>
+      <chart depends="$showCount$">
+        <title>Total Count of New Applications</title>
+        <search base="globalSearch">
+          <query>eval _time=strptime(released, "%b %d, %Y") 
+            | timechart count 
+            | accum count AS "Total Count" 
+            | fields - count
+          </query>
+        </search>        
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.seriesColors">0x00FF00</option>
+      </chart>                
+      <chart depends="$showBoth$">               
+        <title>Total Count and Rate</title>
+        <search base="globalSearch">
+          <query>
+            eval _time=strptime(released, "%b %d, %Y") 
+            | timechart count AS Rate 
+            | accum Rate AS "Total Count"
+          </query>
+        </search>
+        <option name="charting.chart">area</option>
+        <option name="charting.chart.style">shiny</option>
+        <option name="charting.drilldown">all</option>
+        <option name="charting.axisTitleX.visibility">collapsed</option>
+        <option name="charting.legend.placement">none</option>
+        <option name="charting.seriesColors">0x00FF00</option>
+      </chart>
+    </panel>
+  </row>
+  
   <row>
     <panel>
       <table>
@@ -310,9 +385,7 @@
       </input>
       <input type="multiselect" token="platform" searchWhenChanged="true">
         <label>Platform</label>
-        <populatingSearch earliest="0" latest="now" fieldForLabel="platform" fieldForValue="platform">
-          index=apps | head 2100 | where downloads &gt; $downloads$ | dedup id | stats count by platform | sort - count | table platform
-        </populatingSearch>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="platform" fieldForValue="platform">index=apps | head 2100 | where downloads &gt; $downloads$ | dedup id | stats count by platform | sort - count | table platform</populatingSearch>
         <prefix>(</prefix>
         <suffix>)</suffix>
         <valuePrefix>platform="</valuePrefix>
@@ -334,9 +407,7 @@
       </input>
       <input type="multiselect" token="app_contents" searchWhenChanged="true">
         <label>App Contents</label>
-        <populatingSearch earliest="0" latest="now" fieldForLabel="app_contents" fieldForValue="app_contents">
-          index=apps | head 2100 | dedup id | fillnull value="not_specified" app_contents{} | stats count by app_contents{} | sort - count | rename app_contents{} AS app_contents | table app_contents
-        </populatingSearch>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="app_contents" fieldForValue="app_contents">index=apps | head 2100 | dedup id | fillnull value="not_specified" app_contents{} | stats count by app_contents{} | sort - count | rename app_contents{} AS app_contents | table app_contents</populatingSearch>
         <prefix>(</prefix>
         <suffix>)</suffix>
         <valuePrefix>app_contents{}="</valuePrefix>
@@ -347,9 +418,7 @@
       </input>
       <input type="multiselect" token="category" searchWhenChanged="true">
         <label>Category</label>
-        <populatingSearch earliest="0" latest="now" fieldForLabel="category" fieldForValue="category">
-          index=apps | head 2100 | dedup id | stats count by categories{} | sort - count | rename categories{} AS category | table category
-        </populatingSearch>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="category" fieldForValue="category">index=apps | head 2100 | dedup id | stats count by categories{} | sort - count | rename categories{} AS category | table category</populatingSearch>
         <prefix>(</prefix>
         <suffix>)</suffix>
         <valuePrefix>categories{}="</valuePrefix>
@@ -365,9 +434,7 @@
       </input>
       <input type="multiselect" token="status" searchWhenChanged="true">
         <label>App Status</label>
-        <populatingSearch earliest="0" latest="now" fieldForLabel="status" fieldForValue="status">
-          index=apps | head 2100 | dedup id | stats count by status | sort - count | table status
-        </populatingSearch>
+        <populatingSearch earliest="0" latest="now" fieldForLabel="status" fieldForValue="status">index=apps | head 2100 | dedup id | stats count by status | sort - count | table status</populatingSearch>
         <prefix>(</prefix>
         <suffix>)</suffix>
         <valuePrefix>status="</valuePrefix>
@@ -378,10 +445,8 @@
       </input>
       <table id="tblToolTip">
         <search base="formSearch">
-          <query>
-            eval Downloads=tostring(Downloads, "commas") 
-            | table "App Name", Author, Pitch, Platform, Type, "App Content", Category, Downloads, Status, "Last Update", Versions, "Deployment Types"
-          </query>
+          <query>eval Downloads=tostring(Downloads, "commas") 
+            | table "App Name", Author, Pitch, Platform, Type, "App Content", Category, Downloads, Status, "Last Update", Versions, "Deployment Types"</query>
         </search>
         <option name="wrap">true</option>
         <option name="rowNumbers">false</option>

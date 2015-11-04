@@ -1,6 +1,6 @@
 /*khutchinson:whatever id you want to have a scrollable div: prepend it after the # and before the .splunk-view....etc Sometimes you may want more results available but you don't want it to take up the whole page*/
 /* this css allows elements in the named `id` */
-div[id^=element1] .results-table {
+div[id^=element4] .results-table {
     overflow: auto;
     position: relative;
     height: 225px;
