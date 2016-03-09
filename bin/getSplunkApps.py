@@ -34,48 +34,42 @@ def to_csv(app, headers=['id', 'name']):
   return csv_str.rstrip(',')
 
 def main():
-  # download initial list of the apps
-  data = get_apps(100, 0)
+  offset = 0
+  limit = 100
+  last = 0
+  total = 1
 
-  # get the total number of apps
-  total = data['total']
-
-  apps = data['apps']
-  ### Print the result
-  print_json(apps)
-
-  ### Iterate through all pages to download the json containing a list of apps.
-  ### continue downloading the remaining list of apps
-  for i, offset in enumerate(range(100, total, 100)):
-    # download the list of apps
-    data = get_apps(100, offset)
+  while last < total:
+    data = get_apps(limit, offset)  # download initial list of the apps    
+    last = data['last']   # get the last app listed
+    total = data['total']   # get the total number of apps
 
     apps = data['apps']
     ### Print the result
     print_json(apps)
 
+    offset += limit
+
   # Output the lookup file for the product categories of the apps (Enterprise, Cloud, Lite, Hunk, Enterprise Security)
   product_categories = ['enterprise', 'cloud', 'hunk', 'lite', 'es']
   product_lookup_csv = ''
   for product in product_categories:
-    # download initial list of apps within each product category
-    apps_product_data = get_apps(100,0,"product="+product)
-    product_apps_total = apps_product_data['total']
+    product_offset = 0
+    product_apps_last = 0
+    product_apps_total = 1
 
-    product_apps = apps_product_data['apps']
-    ### Print the result
-    for product_app in list(product_apps):
-      # convert it to a csv text
-      product_lookup_csv += product + "," + to_csv(product_app) + "\n"
-
-    ### Iterate through all pages to download the json for the given product of apps.
-    for i, offset in enumerate(range(100, product_apps_total, 100)):
-      # download the list of apps
-      apps_product_data = get_apps(100,offset,"product="+product)
+    while product_apps_last < product_apps_total:
+      # download initial list of apps within each product category
+      apps_product_data = get_apps(limit,product_offset,"product="+product)
+      product_apps_last = apps_product_data['last']
+      product_apps_total = apps_product_data['total']
 
       product_apps = apps_product_data['apps']
+      product_offset += limit
+      
+      ### Print the result
       for product_app in list(product_apps):
-        ### append the result
+        # convert it to a csv text
         product_lookup_csv += product + "," + to_csv(product_app) + "\n"
 
   # append the headers to the csv text
