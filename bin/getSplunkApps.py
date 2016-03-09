@@ -55,33 +55,33 @@ def main():
     print_json(apps)
 
   # Output the lookup file for the product categories of the apps (Enterprise, Cloud, Lite, Hunk, Enterprise Security)
-  categories = ['enterprise', 'cloud', 'hunk', 'lite', 'es']
-  category_lookup_csv = ''
-  for category in categories:
-    # download initial list of apps within each category
-    categorized_apps_data = get_apps(100,0,"product="+category)
-    categorized_total = categorized_apps_data['total']
+  product_categories = ['enterprise', 'cloud', 'hunk', 'lite', 'es']
+  product_lookup_csv = ''
+  for product in product_categories:
+    # download initial list of apps within each product category
+    apps_product_data = get_apps(100,0,"product="+product)
+    product_apps_total = apps_product_data['total']
 
-    categorized_apps = categorized_apps_data['apps']
+    product_apps = apps_product_data['apps']
     ### Print the result
-    for categorized_app in list(categorized_apps):
+    for product_app in list(product_apps):
       # convert it to a csv text
-      category_lookup_csv += category + "," + to_csv(categorized_app) + "\n"
+      product_lookup_csv += product + "," + to_csv(product_app) + "\n"
 
-    ### Iterate through all pages to download the json for the given category of apps.
-    for i, offset in enumerate(range(100, categorized_total, 100)):
+    ### Iterate through all pages to download the json for the given product of apps.
+    for i, offset in enumerate(range(100, product_apps_total, 100)):
       # download the list of apps
-      categorized_apps_data = get_apps(100,offset,"product="+category)
+      apps_product_data = get_apps(100,offset,"product="+product)
 
-      categorized_apps = categorized_apps_data['apps']
-      for categorized_app in list(categorized_apps):
+      product_apps = apps_product_data['apps']
+      for product_app in list(product_apps):
         ### append the result
-        category_lookup_csv += category + "," + to_csv(categorized_app) + "\n"
+        product_lookup_csv += product + "," + to_csv(product_app) + "\n"
 
   # append the headers to the csv text
-  category_lookup_csv = "Category,Id,Name" + "\n" + category_lookup_csv
-  # output the app category csv lookup file to the lookup folder
-  lookup_file_name = "splunk_apps_categories.csv"
+  product_lookup_csv = "Product,Id,Name" + "\n" + product_lookup_csv
+  # output the app product csv lookup file to the lookup folder
+  lookup_file_name = "splunk_apps_products.csv"
   try:
     lookup_path = os.path.dirname(os.path.realpath(__file__)) + "/.."
   except Exception as e:
@@ -89,9 +89,9 @@ def main():
 
   lookup_file = lookup_path + "/lookups/" + lookup_file_name
   # debug output file
-  print "message=outputting to " + lookup_file
+  # print "message=outputting to " + lookup_file
   f = open(lookup_file, 'w')
-  f.write(category_lookup_csv)
+  f.write(product_lookup_csv)
   f.close
 
 
